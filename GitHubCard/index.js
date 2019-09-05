@@ -5,7 +5,6 @@
 
 const cards = document.querySelector('.cards')
 
-//let data
 axios.get('https://api.github.com/users/ericbanker12').then(obj=>{
     cards.appendChild(createCard(obj.data))
 })
@@ -17,7 +16,7 @@ axios.get('https://api.github.com/users/ericbanker12').then(obj=>{
    Skip to Step 3.
 */
 
-// data = {
+//let data = {
 //     avatar_url: "https://avatars3.githubusercontent.com/u/13811826?v=4",
 //     bio: null,
 //     blog: "",
@@ -67,13 +66,26 @@ axios.get('https://api.github.com/users/ericbanker12').then(obj=>{
           user, and adding that card to the DOM.
 */
 
-const followersArray = ['DevWarr', 'Wais-A', 'markgowen', 'Mister-Kay', 'brudnak'];
+// const followersArray = ['DevWarr', 'Wais-A', 'markgowen', 'Mister-Kay', 'brudnak'];
 
-followersArray.forEach(name=>{
-    axios.get(`https://api.github.com/users/${name}`).then(obj=>{
-        cards.appendChild(createCard(obj.data))
+// followersArray.forEach(name=>{
+//     axios.get(`https://api.github.com/users/${name}`).then(obj=>{
+//         cards.appendChild(createCard(obj.data))
+//     })
+// })
+
+axios.get('https://api.github.com/users/EricBanker12/followers')
+    .then(obj=>{
+        //console.log(obj)
+        return obj.data.map(e=>e.login)
     })
-})
+    .then(followers => {
+        followers.forEach(name=>{
+            axios.get(`https://api.github.com/users/${name}`).then(obj=>{
+                cards.appendChild(createCard(obj.data))
+            })
+        })
+    })
 
 /* Step 3: Create a function that accepts a single object as its only argument,
           Using DOM methods and properties, create a component that will return the following DOM element:
@@ -113,13 +125,13 @@ function createCard(data) {
     let cardInfo = createElement('div', {className:'card-info'})
     card.appendChild(cardInfo)
     // name
-    let name = createElement('h3', {className:'name', textContent:data.name})
+    let name = createElement('h3', {className:'name', textContent:data.name||data.login})
     cardInfo.appendChild(name)
     // username
-    let username = createElement('p', {className:'username', textContent:data.username})
+    let username = createElement('p', {className:'username', textContent:data.login})
     cardInfo.appendChild(username)
     // location
-    let location = createElement('p', {textContent:`Location: ${data.location}`})
+    let location = createElement('p', {textContent:`Location: ${data.location||'private'}`})
     cardInfo.appendChild(location)
     // profile
     let profile = createElement('p')
@@ -133,7 +145,7 @@ function createCard(data) {
     let following = createElement('p', {textContent:`Following: ${data.following}`})
     cardInfo.appendChild(following)
     // bio
-    let bio = createElement('p', {textContent:`Bio: ${data.bio}`})
+    let bio = createElement('p', {textContent:`Bio: ${data.bio||'N.A.'}`})
     cardInfo.appendChild(bio)
 
     return card
